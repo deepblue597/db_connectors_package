@@ -1,6 +1,6 @@
 [project]
 name = "db-connectors"
-version = "0.1.0"
+version = "1.0.0"
 description = "A collection of database and message broker connectors for Python applications"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -20,10 +20,11 @@ classifiers = [
 ]
 dependencies = [
     "confluent-kafka>=2.3.0",
-    "quixstreams>=2.0.0",
+    "quixstreams>=3.23.0",
     "boto3>=1.34.0",
     "sqlalchemy>=2.0.0",
     "psycopg2-binary>=2.9.0",
+    "ruff>=0.14.3",
 ]
 
 [project.urls]

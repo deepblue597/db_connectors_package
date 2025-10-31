@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict
 
 
 class Connector(ABC):
-    def __init__(self, address, port, target):
+    def __init__(self, address, port):
         self.address = address
         self.port = port
-        self.target = target
+        #self.target = target
 
     @abstractmethod
     def connect(self):
@@ -16,9 +17,9 @@ class Connector(ABC):
         pass
 
     @abstractmethod
-    def is_connected(self):
+    def is_connected(self) -> bool :
         pass
 
     @abstractmethod
-    def get_connection_info(self):
+    def get_connection_info(self)-> Dict[str, Any]:
         pass

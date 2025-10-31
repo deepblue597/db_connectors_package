@@ -1,6 +1,9 @@
+from typing import Any, Dict, Literal
+
+from pydantic import SecretStr
 from .base import Connector
 from quixstreams import Application
-from quixstreams.kafka import ConnectionConfig
+from quixstreams.kafka import ConnectionConfig , AutoOffsetReset
 
 
 class KafkaConnector(Connector):
@@ -26,21 +29,21 @@ class KafkaConnector(Connector):
 
     def __init__(
         self,
-        address,
-        port,
-        target,
-        consumer_group,
-        auto_offset_reset="earliest",
-        security_protocol="plaintext",
-        username=None,
-        password=None,
+        username: str,
+        password: SecretStr,
+        address: str,
+        port: int,
+        consumer_group: str,
+        auto_offset_reset: AutoOffsetReset = "earliest",
+        security_protocol: Literal['plaintext', 'ssl', 'sasl_plaintext', 'sasl_ssl'] = "plaintext",
     ):
-        super().__init__(address, port, target)
+        super().__init__(address, port)
         self.consumer_group = consumer_group
         self.auto_offset_reset = auto_offset_reset
-        self.security_protocol = security_protocol
+        self.security_protocol: Literal['plaintext', 'ssl', 'sasl_plaintext', 'sasl_ssl'] = security_protocol
         self.username = username
         self.password = password
+        #self.target = target
 
     def connect(self):
         # Implementation for connecting to Kafka
@@ -60,12 +63,23 @@ class KafkaConnector(Connector):
                 auto_offset_reset=self.auto_offset_reset,
             )
 
-            self.topic_obj = self.app.topic(self.target, value_deserializer="json")
-            self.sdf_stream = self.app.dataframe(topic=self.topic_obj)
-            print("Connected to Kafka topic:", self.target)
         except Exception as e:
             print(f"Failed to connect to Kafka: {str(e)}")
             raise e
+        
+    def consume(self, topic ):
+        
+        try: 
+            if not self.app:
+                raise RuntimeError("Application is not initialized. Call connect() first.")
+            
+            self.topic_obj = self.app.topic(topic, value_deserializer="json")
+            self.sdf_stream = self.app.dataframe(topic=self.topic_obj)
+            print("Consuming from Kafka topic:", topic)       
+        except Exception as e:
+            print(f"Failed to consume from Kafka topic {topic}: {str(e)}")
+            raise e
+        
 
     def disconnect(self):
         # Implementation for disconnecting from Kafka
@@ -91,12 +105,11 @@ class KafkaConnector(Connector):
             and self.topic_obj is not None
         )
 
-    def get_connection_info(self):
+    def get_connection_info(self) -> Dict[str, Any]:
         # Return connection information
         return {
             "address": self.address,
             "port": self.port,
-            "topic": self.target,
             "consumer_group": self.consumer_group,
             "auto_offset_reset": self.auto_offset_reset,
             "security_protocol": self.security_protocol,

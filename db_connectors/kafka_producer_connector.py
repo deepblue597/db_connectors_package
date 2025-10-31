@@ -44,7 +44,8 @@ class KafkaProducerConnector(Connector):
         compression_type="snappy",
         message_max_bytes=52428800,
     ):
-        super().__init__(address, port, topic)
+        super().__init__(address, port)
+        #self.target = topic
         self.security_protocol = security_protocol
         self.username = username
         self.password = password
@@ -114,7 +115,6 @@ class KafkaProducerConnector(Connector):
         return {
             "address": self.address,
             "port": self.port,
-            "topic": self.target,
             "security_protocol": self.security_protocol,
             "username": self.username,
             "sasl_mechanism": self.sasl_mechanism,
@@ -135,7 +135,7 @@ class KafkaProducerConnector(Connector):
             )
             pass
 
-    def produce(self, key, value):
+    def produce(self, topic, key, value):
         """Produce a message to the Kafka topic.
 
         Args:
@@ -143,8 +143,10 @@ class KafkaProducerConnector(Connector):
             value (str): The value for the message.
         """
         try:
+            if self.producer is None:
+                raise RuntimeError("Producer is not initialized. Call connect() first.")
             self.producer.produce(
-                topic=self.target, key=key, value=value, callback=self.delivery_callback
+                topic=topic, key=key, value=value, callback=self.delivery_callback
             )
             self.producer.poll(0)  # Poll to trigger delivery callback
             self.producer.flush()
