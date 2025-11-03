@@ -1,6 +1,6 @@
 [project]
 name = "db-connectors"
-version = "1.2.0"
+version = "1.2.1"
 description = "A collection of database and message broker connectors for Python applications"
 readme = "README.md"
 requires-python = ">=3.12"
