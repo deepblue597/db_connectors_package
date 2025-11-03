@@ -155,3 +155,15 @@ class MinIOConnector(Connector):
         except Exception as e:
             print(f"Failed to list objects in folder '{folder_name}': {str(e)}")
             raise e
+        
+    def create_bucket(self, bucket_name: str):
+        # Create a new bucket in MinIO
+        try:
+            if self.s3_client is None:
+                raise RuntimeError("S3 client is not initialized. Call connect() first.")
+            
+            self.s3_client.create_bucket(Bucket=bucket_name)
+            print(f"Bucket '{bucket_name}' created.")
+        except Exception as e:
+            print(f"Failed to create bucket: {str(e)}")
+            raise e

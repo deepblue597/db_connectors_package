@@ -33,7 +33,7 @@ class KafkaProducerConnector(Connector):
         self,
         address,
         port,
-        topic,
+        #topic,
         security_protocol="PLAINTEXT",
         username=None,
         password=None,
