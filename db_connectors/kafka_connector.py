@@ -1,4 +1,4 @@
-from typing import Any, Dict, Literal
+from typing import Any, Dict, Literal, Optional
 
 from pydantic import SecretStr
 from .base import Connector
@@ -29,8 +29,8 @@ class KafkaConnector(Connector):
 
     def __init__(
         self,
-        username: str,
-        password: SecretStr,
+        username: Optional[str],
+        password: Optional[SecretStr],
         address: str,
         port: int,
         consumer_group: str,
